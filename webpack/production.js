@@ -1,4 +1,3 @@
-const { resolve } = require('path')
 const webpack = require('webpack')
 const webpackMerge = require('webpack-merge')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -6,9 +5,12 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const Package = require('../package')
 const commonConfig = require('./base')
 
-const publicPath = resolve(__dirname, '..', 'docs')
+const extractCSS = new ExtractTextPlugin('style.[hash].css')
 
 module.exports = env => webpackMerge(commonConfig, {
+  entry: {
+    themeGenerator: './index.js',
+  },
   output: {
     pathinfo: false,
     filename: '[name].[hash].js'
@@ -16,22 +18,20 @@ module.exports = env => webpackMerge(commonConfig, {
   module: {
     rules: [
       {
-        test: /\.css$/,
-        include: /node_modules/,
-        loader: ExtractTextPlugin.extract('css-loader'),
-      },
-    ],
+        test: /\.scss$/,
+        use: extractCSS.extract({
+          fallbackLoader: 'style-loader',
+          loader: 'css-loader!sass-loader',
+        }),
+      }
+    ]
   },
   plugins: [
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       debug: false,
     }),
-    new ExtractTextPlugin({
-      filename: '[name].[hash].css',
-      disable: false,
-      allChunks: true,
-    }),
+    extractCSS,
     new HtmlWebpackPlugin({
       title: Package.title,
       cache: false,

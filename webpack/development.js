@@ -5,8 +5,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const Package = require('../package')
 const commonConfig = require('./base')
 
-const publicPath = resolve(__dirname, '..', 'docs')
-
 module.exports = webpackMerge(commonConfig, {
   devtool: 'inline-source-map',
   entry: {
@@ -19,9 +17,8 @@ module.exports = webpackMerge(commonConfig, {
   module: {
     rules: [
       {
-        test: /\.css$/,
-        include: /node_modules/,
-        use: ['style-loader', 'css-loader'],
+        test: /\.scss$/,
+        loaders: ["style-loader", "css-loader", "sass-loader"],
       },
     ],
   },
